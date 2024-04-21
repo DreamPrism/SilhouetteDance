@@ -27,13 +27,15 @@ public class MessageAdapter : MessageAdapter<MessageChain>
                 case Lagrange.Core.Message.Entity.MentionEntity mention:
                     from.Add(new MentionEntity(mention.Uin));
                     break;
+                case Lagrange.Core.Message.Entity.MarkdownEntity markdown:
+                    from.Add(new MarkdownEntity(new MarkdownData { Content = markdown.Data.Content }));
+                    break;
                 case Lagrange.Core.Message.Entity.MultiMsgEntity multiMsg:
                     from.Add(new MultiMsgEntity(multiMsg.Chains.Select(From).ToArray()));
                     break;
             }
         }
 
-        from.Add(new TextEntity(message.GetEntity<RawEntity>()?.Text ?? ""));
         return from;
     }
 
@@ -55,6 +57,9 @@ public class MessageAdapter : MessageAdapter<MessageChain>
                     break;
                 case MentionEntity mention:
                     builder.Mention((uint)mention.TargetUin);
+                    break;
+                case MarkdownEntity markdown:
+                    builder.Markdown(new Lagrange.Core.Message.Entity.MarkdownData { Content = markdown.Data.Content });
                     break;
                 case MultiMsgEntity multiMsg:
                     builder.MultiMsg(null, multiMsg.Messages.Select(To).ToArray());

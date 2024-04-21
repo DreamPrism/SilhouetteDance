@@ -70,9 +70,15 @@ public class LagrangeQQAdapter : AdapterBase
         #endregion
 
         _lagrange.Invoker.OnGroupMessageReceived += (context, @event) =>
+        {
+            _logger.LogInformation(@event.Chain.ToPreviewString());
             OnMessageReceived.Invoke(context, _msgAdapter.From(@event.Chain));
+        };
         _lagrange.Invoker.OnFriendMessageReceived += (context, @event) =>
+        {
+            _logger.LogInformation(@event.Chain.ToPreviewString());
             OnMessageReceived.Invoke(context, _msgAdapter.From(@event.Chain));
+        };
 
         var success = false;
         if (string.IsNullOrEmpty(_config["Lagrange:Password"]))

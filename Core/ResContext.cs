@@ -28,7 +28,7 @@ public class ResContext
     }
     
 
-    public async Task<byte[]?> GetWebRes(string key, string url)
+    public async Task<byte[]> GetWebRes(string key, string url)
     {
         string path = ResolveKey(key);
         var response = await _client.GetAsync(url);

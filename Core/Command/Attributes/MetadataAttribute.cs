@@ -12,5 +12,6 @@ public class MetadataAttribute : Attribute
     {
         Uin,
         Timestamp,
+        OriginalMessage
     }
 }

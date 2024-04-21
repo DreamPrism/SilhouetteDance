@@ -11,8 +11,8 @@ public sealed class LagrangeApp:IHost
     private readonly IHost _hostApp;
 
     public IServiceProvider Services => _hostApp.Services;
-    public AdapterCollection Adapters { get; }
-    public ILogger<LagrangeApp> Logger { get; }
+    private AdapterCollection Adapters { get; }
+    private ILogger<LagrangeApp> Logger { get; }
     internal LagrangeApp(IHost host, AdapterCollection adapterCollection)
     {
         _hostApp = host;

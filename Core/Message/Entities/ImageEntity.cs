@@ -4,6 +4,7 @@ namespace SilhouetteDance.Core.Message.Entities;
 
 public class ImageEntity : MessageEntity
 {
+    private static readonly HttpClient client=new ();
     public string Url { get; set; }
     
     public string Path { get; set; }
@@ -29,4 +30,6 @@ public class ImageEntity : MessageEntity
         Data = data;
         ImageSize = imageSize;
     }
+
+    public async Task DownloadImageData() => Data = await client.GetByteArrayAsync(Url);
 }

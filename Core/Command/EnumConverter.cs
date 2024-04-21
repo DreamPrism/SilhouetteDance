@@ -9,7 +9,7 @@ internal static class EnumConverter
     public static void RegisterConverter(CommandService service)
     {
         var field = service.GetType().GetField("Converters", BindingFlags.NonPublic | BindingFlags.Static) ?? throw new InvalidOperationException("Could not find Converters field");
-        var converters = (Dictionary<Type, Func<string, object?>>)(field.GetValue(service) ?? throw new InvalidOperationException("Converters field is null"));
+        var converters = (Dictionary<Type, Func<string, object>>)(field.GetValue(service) ?? throw new InvalidOperationException("Converters field is null"));
         
         var assembly = Assembly.GetExecutingAssembly();
         var methods = assembly.GetTypes()

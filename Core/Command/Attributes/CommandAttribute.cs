@@ -7,7 +7,7 @@ internal class CommandAttribute : Attribute
 {
     public CommandOptions Option { get; set; }
     public string StringInvoke { get; }
-    public Regex? RegexInvoke { get; }
+    public Regex RegexInvoke { get; }
     public int Priority { get; }
     
     public CommandAttribute(string invoke, int priority = 0, CommandOptions option = CommandOptions.StartWith)

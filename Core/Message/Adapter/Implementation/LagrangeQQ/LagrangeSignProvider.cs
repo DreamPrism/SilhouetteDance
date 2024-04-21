@@ -10,7 +10,7 @@ namespace SilhouetteDance.Core.Message.Adapter.Implementation.LagrangeQQ;
 
 internal class LagrangeSignProvider : SignProvider
 {
-    private const string Url = "https://sign.libfekit.so/api/sign";
+    private const string Url = "https://sign.lagrangecore.org/api/sign";
 
     private readonly HttpClient _client = new();
     
