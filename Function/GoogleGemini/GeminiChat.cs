@@ -55,7 +55,7 @@ public class GeminiChat : FunctionBase
 
     [Command("gmn vision")]
     public async Task<MessageStruct> ProVisionChat(
-        [Metadata(MetadataAttribute.MetadataType.OriginalMessage)]
+        [Metadata(MetadataAttribute.MetadataType.MessageStruct)]
         MessageStruct msg)
     {
         if (!Available)
@@ -65,10 +65,17 @@ public class GeminiChat : FunctionBase
             return new MessageStruct { new TextEntity("请至少提供一张图片") };
 
         var parts = new List<Part>();
+        var replaced = false;
         foreach (var entity in msg)
             switch (entity)
             {
                 case TextEntity text:
+                    if (!replaced && text.Text.Contains("gmn vision"))
+                    {
+                        parts.Add(new Part { Text = text.Text.Replace("gmn vision", "") });
+                        replaced = true;
+                    }
+
                     parts.Add(new Part { Text = text.Text });
                     break;
                 case ImageEntity image:
@@ -94,17 +101,24 @@ public class GeminiChat : FunctionBase
 
     [Command("gmn latest")]
     public async Task<MessageStruct> LatestChat(
-        [Metadata(MetadataAttribute.MetadataType.OriginalMessage)]
+        [Metadata(MetadataAttribute.MetadataType.MessageStruct)]
         MessageStruct msg)
     {
         if (!Available)
             return new MessageStruct { new TextEntity("当前Gemini服务不可用") };
 
         var parts = new List<Part>();
+        var replaced = false;
         foreach (var entity in msg)
             switch (entity)
             {
                 case TextEntity text:
+                    if (!replaced && text.Text.Contains("gmn latest"))
+                    {
+                        parts.Add(new Part { Text = text.Text.Replace("gmn latest", "") });
+                        replaced = true;
+                    }
+
                     parts.Add(new Part { Text = text.Text });
                     break;
                 case ImageEntity image:
@@ -137,7 +151,7 @@ public class GeminiChat : FunctionBase
         var path = Path.Combine(_config["GoogleGemini:PromptsPath"] ?? "prompts", "essay.txt");
         if (!File.Exists(path))
             return new MessageStruct { new TextEntity("缺少生成作文所需的prompts") };
-        
+
         var input = (await File.ReadAllTextAsync(path)).Replace("${TOPIC HERE}", msgText);
         var response = await DefaultModel.GenerateContentAsync(input);
         return new MessageStruct { new MarkdownEntity(new MarkdownData { Content = response }) };

@@ -179,7 +179,7 @@ internal class CommandService
                 {
                     MetadataAttribute.MetadataType.Timestamp => msg.Timestamp,
                     MetadataAttribute.MetadataType.Uin => msg.FromUin,
-                    MetadataAttribute.MetadataType.OriginalMessage => msg,
+                    MetadataAttribute.MetadataType.MessageStruct => msg,
                     _ => null
                 };
                 i--; // do not count this parameter into token count
