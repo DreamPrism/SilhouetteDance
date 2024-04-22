@@ -55,5 +55,6 @@ public sealed class LagrangeAppBuilder
         .AddSingleton<ResContext>()  // Resources Context
         .AddSingleton<MetadataContext>()
         .AddHostedService<MetadataService>()
+        .AddSingleton<AssemblyService>()
         .AddSingleton(new CommandService(Configuration, Services)); // Command Manager
 }

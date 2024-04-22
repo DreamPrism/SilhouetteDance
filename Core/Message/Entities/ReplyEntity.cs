@@ -1,6 +1,6 @@
 ﻿namespace SilhouetteDance.Core.Message.Entities;
 
-public class ReplyEntity : MessageEntity
+public class ReplyEntity : IMessageEntity
 {
     public long TargetUin { get; set; }
     
@@ -8,4 +8,6 @@ public class ReplyEntity : MessageEntity
     {
         TargetUin = targetUin;
     }
+    public string ToPreviewString() => $"[ReplyTo:{TargetUin}]";
+    public string ToPreviewText() => $"[回复{TargetUin}]";
 }

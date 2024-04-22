@@ -1,11 +1,11 @@
 ﻿namespace SilhouetteDance.Core.Message.Entities;
 
-public class FileEntity : MessageEntity
+public class FileEntity : IMessageEntity
 {
     public string FileName { get; set; }
 
     public Stream Data { get; set; }
-    
+
     public FileEntity(string path)
     {
         Data = new FileStream(path, FileMode.Open);
@@ -17,4 +17,7 @@ public class FileEntity : MessageEntity
         Data = new MemoryStream(data);
         FileName = fileName;
     }
+
+    public string ToPreviewString() => $"[File] {FileName} ({Data.Length / 1024.0 / 1024.0:F1}MB)";
+    public string ToPreviewText() => $"[文件] {FileName}";
 }

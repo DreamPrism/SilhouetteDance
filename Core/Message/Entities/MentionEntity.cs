@@ -1,6 +1,6 @@
 ﻿namespace SilhouetteDance.Core.Message.Entities;
 
-public class MentionEntity : MessageEntity
+public class MentionEntity : IMessageEntity
 {
     public long TargetUin { get; set; }
     
@@ -8,4 +8,7 @@ public class MentionEntity : MessageEntity
     {
         TargetUin = targetUin;
     }
+
+    public string ToPreviewString() => $"[@{TargetUin}]";
+    public string ToPreviewText() => $"@{TargetUin}";
 }

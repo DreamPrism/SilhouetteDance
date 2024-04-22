@@ -4,7 +4,7 @@ using ProtoBuf;
 
 namespace SilhouetteDance.Core.Message.Entities;
 
-public class MarkdownEntity : MessageEntity
+public class MarkdownEntity : IMessageEntity
 {
     public MarkdownData Data { get; set; }
     
@@ -13,7 +13,9 @@ public class MarkdownEntity : MessageEntity
     public MarkdownEntity(MarkdownData data) => Data = data;
     
     public MarkdownEntity(string data) => Data = JsonSerializer.Deserialize<MarkdownData>(data) ?? throw new Exception();
-    
+
+    public string ToPreviewString() => $"[Markdown] {Data.Content[..Math.Min(Data.Content.Length, 5)]}...";
+    public string ToPreviewText()=>$"[Markdown] {Data.Content[..Math.Min(Data.Content.Length, 10)]}...";
 }
 
 public class MarkdownData
