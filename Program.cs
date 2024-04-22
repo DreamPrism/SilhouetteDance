@@ -2,6 +2,7 @@
 
 using System.Runtime;
 using Microsoft.Extensions.Hosting;
+using SilhouetteDance.Core.Message.Adapter.Implementation.CommandLine;
 using SilhouetteDance.Core.Message.Adapter.Implementation.LagrangeQQ;
 
 namespace SilhouetteDance;
@@ -22,7 +23,8 @@ internal class Program
 
         var hostBuilder = new LagrangeAppBuilder(args)
             .ConfigureConfiguration("appsettings.json", false, true)
-            .AddAdapter<LagrangeQQAdapter>();
+            .AddAdapter<LagrangeQQAdapter>()
+            .AddAdapter<ConsoleAdapter>();
         hostBuilder.Build().Run();
     }
 }
