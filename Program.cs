@@ -21,7 +21,7 @@ internal class Program
 
         AppDomain.CurrentDomain.ProcessExit += (_, _) => { Console.WriteLine("Process exit"); };
 
-        var hostBuilder = new LagrangeAppBuilder(args)
+        var hostBuilder = new MainAppBuilder(args)
             .ConfigureConfiguration("appsettings.json", false, true)
             .AddAdapter<LagrangeQQAdapter>()
             .AddAdapter<ConsoleAdapter>();

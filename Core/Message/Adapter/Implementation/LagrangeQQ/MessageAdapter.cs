@@ -1,11 +1,15 @@
 using Lagrange.Core.Message;
 using SilhouetteDance.Core.Message.Entities;
+using SilhouetteDance.Utility;
 using RawEntity = Lagrange.Core.Message.Entity.TextEntity;
 
 namespace SilhouetteDance.Core.Message.Adapter.Implementation.LagrangeQQ;
 
 public class MessageAdapter : MessageAdapter<MessageChain>
 {
+    private PlaywrightService _playwright;
+    public MessageAdapter(PlaywrightService playwright) => _playwright = playwright;
+
     public override MessageStruct From(MessageChain message)
     {
         var from = new MessageStruct
@@ -59,7 +63,9 @@ public class MessageAdapter : MessageAdapter<MessageChain>
                     builder.Mention((uint)mention.TargetUin);
                     break;
                 case MarkdownEntity markdown:
-                    builder.Markdown(new Lagrange.Core.Message.Entity.MarkdownData { Content = markdown.Data.Content });
+                    var imgs = _playwright.RenderMarkdownToImage(markdown.Data.Content).Result;
+                    foreach (var img in imgs)
+                        builder.Image(img);
                     break;
                 case MultiMsgEntity multiMsg:
                     builder.MultiMsg(null, multiMsg.Messages.Select(To).ToArray());

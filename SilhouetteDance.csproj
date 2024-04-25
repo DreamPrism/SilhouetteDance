@@ -9,7 +9,9 @@
   <ItemGroup>
     <PackageReference Include="Google_GenerativeAI" Version="0.1.19" />
     <PackageReference Include="Lagrange.Core" Version="0.2.1" />
+    <PackageReference Include="Markdig" Version="0.37.0" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="7.0.1" />
+    <PackageReference Include="Microsoft.Playwright" Version="1.43.0" />
   </ItemGroup>
 
   <ItemGroup>

@@ -60,7 +60,7 @@ internal class CommandService
                 var attribute = method.GetCustomAttribute<CommandAttribute>();
                 if (attribute == null) continue;
 
-                switch (attribute.Option) // make lint happy
+                switch (attribute.Option) 
                 {
                     case CommandOptions.Regex:
                         if (attribute.RegexInvoke == null) continue;
@@ -128,7 +128,7 @@ internal class CommandService
         var msgRaw = msg.GetEntity<TextEntity>()?.Text ?? "";
         if (!msgRaw.StartsWith(prefix)) return null;
 
-        msgRaw = msgRaw[prefix.Length..]; // remove prefix
+        msgRaw = msgRaw[prefix.Length..];
         var msgSplit = msgRaw.Split(' ', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         var matchTarget = msgSplit.Length > 1
             ? string.Join(' ', msgSplit.Take(_maxStringCommandLength)).Trim()

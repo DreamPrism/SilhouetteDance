@@ -6,9 +6,10 @@ using SilhouetteDance.Core;
 using SilhouetteDance.Core.Command;
 using SilhouetteDance.Core.Dynamic;
 using SilhouetteDance.Core.Message.Adapter;
+using SilhouetteDance.Utility;
 
 namespace SilhouetteDance;
-public sealed class LagrangeAppBuilder
+public sealed class MainAppBuilder
 {
     private IServiceCollection Services => _hostAppBuilder.Services;
     
@@ -18,43 +19,43 @@ public sealed class LagrangeAppBuilder
     
     private readonly AdapterCollection _adapters;
 
-    public LagrangeAppBuilder(string[] args)
+    public MainAppBuilder(string[] args)
     {
         _hostAppBuilder = new HostApplicationBuilder(args);
         _adapters = new AdapterCollection(Services);
         StandardComponent();
     }
     
-    public LagrangeAppBuilder AddAdapter<TAdapter>() where TAdapter : AdapterBase
+    public MainAppBuilder AddAdapter<TAdapter>() where TAdapter : AdapterBase
     {
         var adapter = ActivatorUtilities.CreateInstance<TAdapter>(Services.BuildServiceProvider());
         _adapters.Add(adapter);
         return this;
     }
     
-    public LagrangeAppBuilder ConfigureServices(Action<IServiceCollection> configureDelegate)
+    public MainAppBuilder ConfigureServices(Action<IServiceCollection> configureDelegate)
     {
         configureDelegate(Services);
         return this;
     }
     
-    public LagrangeAppBuilder ConfigureConfiguration(string path, bool optional = false, bool reloadOnChange = false)
+    public MainAppBuilder ConfigureConfiguration(string path, bool optional = false, bool reloadOnChange = false)
     {
         Configuration.AddJsonFile(path, optional, reloadOnChange);
         return this;
     }
 
-    public LagrangeApp Build()
+    public MainApp Build()
     {
         StandardComponent();
-        return new LagrangeApp(_hostAppBuilder.Build(), _adapters);
+        return new MainApp(_hostAppBuilder.Build(), _adapters);
     }
     
     private void StandardComponent() => Services
         .AddSingleton<AssemblyService>()
         .AddSingleton<ResContext>()  // Resources Context
         .AddSingleton<MetadataContext>()
+        .AddSingleton<PlaywrightService>()
         .AddHostedService<MetadataService>()
-        .AddSingleton<AssemblyService>()
         .AddSingleton(new CommandService(Configuration, Services)); // Command Manager
 }
