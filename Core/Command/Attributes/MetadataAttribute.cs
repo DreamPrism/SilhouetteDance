@@ -12,6 +12,7 @@ public class MetadataAttribute : Attribute
     {
         Uin,
         Timestamp,
-        MessageStruct
+        MessageStruct,
+        Adapter
     }
 }

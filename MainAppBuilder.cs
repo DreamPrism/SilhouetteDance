@@ -49,7 +49,7 @@ public sealed class MainAppBuilder
     public MainApp Build()
     {
         StandardComponent();
-        return new MainApp(_hostAppBuilder.Build(), _adapters);
+        return new MainApp(_hostAppBuilder.Build(), Configuration, _adapters);
     }
 
     private void StandardComponent() => Services

@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using SilhouetteDance.Core.Command.Attributes;
 using SilhouetteDance.Core.Message;
+using SilhouetteDance.Core.Message.Adapter;
 using SilhouetteDance.Function;
 using SilhouetteDance.Utility;
 using TextEntity = SilhouetteDance.Core.Message.Entities.TextEntity;
@@ -122,7 +123,7 @@ internal class CommandService
         }
     }
 
-    public async Task<MessageStruct> InvokeCommand(MessageStruct msg)
+    public async Task<MessageStruct> InvokeCommand(MessageStruct msg, AdapterBase adapter)
     {
         var prefix = _configuration["Generic:CommandPrefix"] ?? "/";
         var msgRaw = msg.GetEntity<TextEntity>()?.Text ?? "";
@@ -180,6 +181,7 @@ internal class CommandService
                     MetadataAttribute.MetadataType.Timestamp => msg.Timestamp,
                     MetadataAttribute.MetadataType.Uin => msg.FromUin,
                     MetadataAttribute.MetadataType.MessageStruct => msg,
+                    MetadataAttribute.MetadataType.Adapter => adapter,
                     _ => null
                 };
                 i--; // do not count this parameter into token count
