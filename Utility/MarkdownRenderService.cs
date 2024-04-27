@@ -24,12 +24,19 @@ public class MarkdownRenderService
         var content = JsonContent.Create(new
         {
             md_content = markdown,
-            width = int.Parse(_config["MarkdownRender:Width"] ?? "768")
+            width = int.Parse(_config["MarkdownRenderer:Width"] ?? "768")
         });
-        var response = await _client.PostAsync(API, content);
-        if (response.IsSuccessStatusCode)
-            return await response.Content.ReadAsByteArrayAsync();
-        _logger.LogError($"Failed to render markdown: {response.ReasonPhrase}");
+        try
+        {
+            var response = await _client.PostAsync(API, content);
+            if (response.IsSuccessStatusCode)
+                return await response.Content.ReadAsByteArrayAsync();
+            _logger.LogError($"Failed to render markdown: {response.ReasonPhrase}");
+        }
+        catch (Exception e)
+        {
+            _logger.LogError($"Failed to render markdown: {e.Message}");
+        }
         return null;
     }
 }
