@@ -21,22 +21,30 @@ public class MarkdownRenderService
 
     public async Task<byte[]> RenderMarkdownAsync(string markdown)
     {
-        var content = JsonContent.Create(new
-        {
-            md_content = markdown,
-            width = int.Parse(_config["MarkdownRenderer:Width"] ?? "768")
-        });
+        JsonContent content;
+        if (!string.IsNullOrEmpty(_config["MarkdownRenderer:Width"]))
+            content = JsonContent.Create(new
+            {
+                md_content = markdown,
+                width = int.Parse(_config["MarkdownRenderer:Width"])
+            });
+        else
+            content = JsonContent.Create(new
+            {
+                md_content = markdown
+            });
         try
         {
             var response = await _client.PostAsync(API, content);
             if (response.IsSuccessStatusCode)
                 return await response.Content.ReadAsByteArrayAsync();
-            _logger.LogError($"Failed to render markdown: {response.ReasonPhrase}");
+            _logger.LogWarning($"Failed to render markdown: {response.ReasonPhrase}, send raw markdown text.");
         }
         catch (Exception e)
         {
-            _logger.LogError($"Failed to render markdown: {e.Message}");
+            _logger.LogWarning($"Failed to render markdown: {e.Message}, send raw markdown text.");
         }
+
         return null;
     }
 }
