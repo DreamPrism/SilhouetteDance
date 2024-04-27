@@ -254,8 +254,9 @@ internal class CommandService
                 : await (method.Invoke(instance, args) as Task<MessageStruct>)!;
             return result;
         }
-        catch (Exception)
+        catch (Exception ex)
         {
+            Console.WriteLine(ex);
             return new MessageStruct
                 { new TextEntity($"指令【{matchTarget}】执行失败") };
         }

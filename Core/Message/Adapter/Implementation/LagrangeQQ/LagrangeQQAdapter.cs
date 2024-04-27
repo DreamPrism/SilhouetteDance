@@ -1,7 +1,9 @@
 ﻿using Lagrange.Core;
 using Lagrange.Core.Common.Interface.Api;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using SilhouetteDance.Utility;
 using LogLevel = Lagrange.Core.Event.EventArg.LogLevel;
 
 namespace SilhouetteDance.Core.Message.Adapter.Implementation.LagrangeQQ;
@@ -11,14 +13,15 @@ public class LagrangeQQAdapter : AdapterBase
     private readonly IConfiguration _config;
     private readonly ILogger _logger;
     private readonly BotContext _lagrange;
-    private readonly MessageAdapter _msgAdapter = new();
+    private readonly MessageAdapter _msgAdapter;
 
-    public LagrangeQQAdapter(IConfiguration config, ILogger<LagrangeApp> logger)
+    public LagrangeQQAdapter(IConfiguration config, ILogger<MainApp> logger, IServiceProvider services)
     {
         _config = config;
         _logger = logger;
         _lagrange = BotManager.CreateBot(_config["Lagrange:DeviceInfoPath"] ?? "device.json",
             config["Lagrange:KeyStorePath"] ?? "keystore.json");
+        _msgAdapter = new MessageAdapter(services.GetRequiredService<MarkdownRenderService>());
     }
 
     public override event EventHandler<MessageStruct> OnMessageReceived = delegate { };

@@ -6,18 +6,18 @@ using SilhouetteDance.Core.Message.Adapter;
 
 namespace SilhouetteDance;
 
-public sealed class LagrangeApp:IHost
+public sealed class MainApp:IHost
 {
     private readonly IHost _hostApp;
 
     public IServiceProvider Services => _hostApp.Services;
     private AdapterCollection Adapters { get; }
-    private ILogger<LagrangeApp> Logger { get; }
-    internal LagrangeApp(IHost host, AdapterCollection adapterCollection)
+    private ILogger<MainApp> Logger { get; }
+    internal MainApp(IHost host, AdapterCollection adapterCollection)
     {
         _hostApp = host;
         Adapters = adapterCollection;
-        Logger = Services.GetRequiredService<ILogger<LagrangeApp>>();
+        Logger = Services.GetRequiredService<ILogger<MainApp>>();
     }public async Task StartAsync(CancellationToken cancellationToken = new())
     {
         Logger.LogInformation("SilhouetteDance started");

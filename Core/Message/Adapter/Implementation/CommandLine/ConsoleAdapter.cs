@@ -10,7 +10,7 @@ public class ConsoleAdapter : AdapterBase
     private readonly ILogger _logger;
     private readonly MessageAdapter _msgAdapter = new();
 
-    public ConsoleAdapter(IConfiguration config, ILogger<LagrangeApp> logger)
+    public ConsoleAdapter(IConfiguration config, ILogger<MainApp> logger)
     {
         _config = config;
         _logger = logger;

@@ -1,11 +1,17 @@
 using Lagrange.Core.Message;
 using SilhouetteDance.Core.Message.Entities;
+using SilhouetteDance.Utility;
 using RawEntity = Lagrange.Core.Message.Entity.TextEntity;
 
 namespace SilhouetteDance.Core.Message.Adapter.Implementation.LagrangeQQ;
 
 public class MessageAdapter : MessageAdapter<MessageChain>
 {
+    private MarkdownRenderService _markdownRenderer;
+
+    public MessageAdapter(MarkdownRenderService markdownRenderService = null) =>
+        _markdownRenderer = markdownRenderService;
+
     public override MessageStruct From(MessageChain message)
     {
         var from = new MessageStruct
@@ -59,7 +65,11 @@ public class MessageAdapter : MessageAdapter<MessageChain>
                     builder.Mention((uint)mention.TargetUin);
                     break;
                 case MarkdownEntity markdown:
-                    builder.Markdown(new Lagrange.Core.Message.Entity.MarkdownData { Content = markdown.Data.Content });
+                    if (_markdownRenderer != null)
+                    {
+                        var bytes = _markdownRenderer.RenderMarkdownAsync(markdown.Data.Content).Result;
+                        _ = bytes != null ? builder.Image(bytes) : builder.Text(markdown.Data.Content);
+                    }
                     break;
                 case MultiMsgEntity multiMsg:
                     builder.MultiMsg(null, multiMsg.Messages.Select(To).ToArray());
