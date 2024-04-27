@@ -24,7 +24,7 @@ public class LagrangeQQAdapter : AdapterBase
         _config = config;
         _logger = logger;
         _lagrange = BotManager.CreateBot(_config["Lagrange:DeviceInfoPath"] ?? "device.json",
-            config["Lagrange:KeyStorePath"] ?? "keystore.json");
+            config["Lagrange:KeyStorePath"] ?? "keystore.json", _config);
         _msgAdapter = new MessageAdapter(services.GetRequiredService<MarkdownRenderService>());
     }
 

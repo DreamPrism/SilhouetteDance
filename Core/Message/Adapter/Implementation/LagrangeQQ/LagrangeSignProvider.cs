@@ -1,20 +1,43 @@
 ﻿using System.Globalization;
+using System.Net;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using System.Web;
 using Lagrange.Core.Event.EventArg;
 using Lagrange.Core.Utility.Sign;
+using Microsoft.Extensions.Configuration;
 
 namespace SilhouetteDance.Core.Message.Adapter.Implementation.LagrangeQQ;
 
 internal class LagrangeSignProvider : SignProvider
 {
-    private const string Url = "https://sign.lagrangecore.org/api/sign";
+    private string Url => _config["Lagrange:SignServerUrl"];
+    private string Proxy => _config["Lagrange:Proxy"];
 
-    private readonly HttpClient _client = new();
-    
+    private readonly IConfiguration _config;
+
+    private readonly HttpClient _client;
+
     private const int retries = 3;
+
+    public LagrangeSignProvider(IConfiguration config)
+    {
+        _config = config;
+        var handler = new HttpClientHandler();
+        if (!string.IsNullOrEmpty(Proxy))
+            try
+            {
+                handler.Proxy = new WebProxy(Proxy);
+            }
+            catch
+            {
+                Utils.Log(LogLevel.Warning,
+                    $"[{nameof(LagrangeSignProvider)}] Failed to set proxy, running without proxy.");
+            }
+
+        _client = new HttpClient(handler);
+    }
 
     public override byte[] Sign(string cmd, uint seq, byte[] body, out byte[] ver, out string token)
     {
@@ -22,7 +45,7 @@ internal class LagrangeSignProvider : SignProvider
         token = null;
         if (!WhiteListCommand.Contains(cmd)) return null;
         if (string.IsNullOrEmpty(Url)) return new byte[20]; // Dummy signature
-        
+
         var payload = new Dictionary<string, string>
         {
             { "cmd", cmd },
@@ -40,11 +63,14 @@ internal class LagrangeSignProvider : SignProvider
             }
             catch (Exception)
             {
-                Utils.Log(LogLevel.Warning,$"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LagrangeSignProvider)}] Failed to get signature, retry in 1 second.({i+1}/{retries}");
+                Utils.Log(LogLevel.Warning,
+                    $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LagrangeSignProvider)}] Failed to get signature, retry in 1 second.({i + 1}/{retries}");
                 Task.Delay(1000).Wait();
             }
         }
-        Utils.Log(LogLevel.Fatal,$"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LagrangeSignProvider)}] Failed to get signature after {retries} tries.");
+
+        Utils.Log(LogLevel.Fatal,
+            $"[{DateTime.Now:yyyy-MM-dd HH:mm:ss}] [{nameof(LagrangeSignProvider)}] Failed to get signature after {retries} tries.");
         return new byte[20]; // Dummy signature
     }
 
@@ -69,6 +95,7 @@ internal class LagrangeSignProvider : SignProvider
             sb.Append(b.ToString(lower ? "x2" : "X2"));
             if (space) sb.Append(' ');
         }
+
         return sb.ToString();
     }
 
