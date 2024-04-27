@@ -58,7 +58,7 @@ public sealed class MainApp : IHost
             };
             adapter.OnGroupInvitationReceived += async (_, args) =>
             {
-                var superUsers = JsonSerializer.Deserialize<HashSet<uint>>(Configuration["Generic:SuperUsers"] ?? "[]");
+                var superUsers = Configuration.GetSection("Generic:SuperUsers").Get<HashSet<uint>>();
                 var data = new GroupInvitationData { GroupUin = args.GroupUin, InvitorUin = args.InvitorUin };
                 if (superUsers.Contains(args.InvitorUin))
                     await adapter.SetGroupInvitationAsync(data, RequestOperation.Accept, cancellationToken);
