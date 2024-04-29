@@ -1,4 +1,5 @@
-﻿using System.Net;
+﻿using System.Diagnostics;
+using System.Net;
 using GenerativeAI.Models;
 using GenerativeAI.Types;
 using Lagrange.Core;
@@ -49,8 +50,9 @@ public class GeminiChat : FunctionBase
         if (!Available)
             return new MessageStruct { new TextEntity("当前Gemini服务不可用") };
 
+        var watch = Stopwatch.StartNew();
         var response = await DefaultModel.GenerateContentAsync(msgText);
-        return new MessageStruct { new MarkdownEntity(new MarkdownData { Content = ProcessMarkdown(response) }) };
+        return GenerateReply(response, watch.Elapsed.TotalSeconds);
     }
 
     [Command("gmn vision")]
@@ -64,6 +66,7 @@ public class GeminiChat : FunctionBase
         if (!msg.Any(e => e is ImageEntity))
             return new MessageStruct { new TextEntity("请至少提供一张图片") };
 
+        var watch = Stopwatch.StartNew();
         var parts = new List<Part>();
         var replaced = false;
         foreach (var entity in msg)
@@ -93,9 +96,9 @@ public class GeminiChat : FunctionBase
             }
 
         var response = await ProVisionModal.GenerateContentAsync(parts);
-        var resultMarkdown = ProcessMarkdown(response.Text());
+        var resultMarkdown = response.Text();
         return resultMarkdown != null
-            ? new MessageStruct { new MarkdownEntity(new MarkdownData { Content = response.Text() }) }
+            ? GenerateReply(resultMarkdown, watch.Elapsed.TotalSeconds)
             : new MessageStruct { new TextEntity("无法获取有效的回复") };
     }
 
@@ -107,6 +110,7 @@ public class GeminiChat : FunctionBase
         if (!Available)
             return new MessageStruct { new TextEntity("当前Gemini服务不可用") };
 
+        var watch = Stopwatch.StartNew();
         var parts = new List<Part>();
         var replaced = false;
         foreach (var entity in msg)
@@ -136,9 +140,9 @@ public class GeminiChat : FunctionBase
             }
 
         var response = await LatestModal.GenerateContentAsync(parts);
-        var resultMarkdown = ProcessMarkdown(response.Text());
+        var resultMarkdown = response.Text();
         return resultMarkdown != null
-            ? new MessageStruct { new MarkdownEntity(new MarkdownData { Content = response.Text() }) }
+            ? GenerateReply(resultMarkdown, watch.Elapsed.TotalSeconds)
             : new MessageStruct { new TextEntity("无法获取有效的回复") };
     }
 
@@ -148,15 +152,20 @@ public class GeminiChat : FunctionBase
         if (!Available)
             return new MessageStruct { new TextEntity("当前Gemini服务不可用") };
 
+        var watch = Stopwatch.StartNew();
         var path = Path.Combine(_config["GoogleGemini:PromptsPath"] ?? "prompts", "essay.txt");
         if (!File.Exists(path))
             return new MessageStruct { new TextEntity("缺少生成作文所需的prompts") };
 
         var input = (await File.ReadAllTextAsync(path)).Replace("${TOPIC HERE}", msgText);
         var response = await DefaultModel.GenerateContentAsync(input);
-        return new MessageStruct { new MarkdownEntity(new MarkdownData { Content = response }) };
+        return GenerateReply(response, watch.Elapsed.TotalSeconds);
     }
 
-    private static string ProcessMarkdown(string markdown) =>
-        markdown?.Replace("\n", "\n\n").Replace("\"", @"\\\""").Replace(@"\", @"\\");
+    private static MessageStruct GenerateReply(string response, double timeConsumed) =>
+        new()
+        {
+            new TextEntity($"本次生成回复用时:{timeConsumed:F1}s\n"),
+            new MarkdownEntity(new MarkdownData { Content = response })
+        };
 }
