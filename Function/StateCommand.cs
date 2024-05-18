@@ -10,10 +10,8 @@ namespace SilhouetteDance.Function;
 public class StateCommand : FunctionBase
 {
     private static readonly DateTime StartTime = DateTime.Now;
-
-    public StateCommand(ResContext resContext) : base(resContext)
-    {
-    }
+    
+    public StateCommand(ResContext resContext) : base(resContext) => Console.WriteLine($"Loaded State command at {StartTime:yyyy-MM-dd HH:mm:ss}");
 
     [Command("state")]
     public static async Task<MessageStruct> GetState()
